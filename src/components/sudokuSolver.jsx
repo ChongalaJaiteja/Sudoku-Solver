@@ -1,21 +1,134 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const SudokuSolver = () => {
     const [boardSize, setBoardSize] = useState(9);
+    const subGridSize = Math.sqrt(boardSize);
     const initialBoard = Array.from({ length: boardSize }, () =>
         Array.from({ length: boardSize }, () => ""),
     );
-    const [board, setBoard] = useState([
-        ["9", "5", "7", "", "1", "3", "", "8", "4"],
-        ["4", "8", "3", "", "5", "7", "1", "", "6"],
-        ["", "1", "2", "", "4", "9", "5", "3", "7"],
-        ["1", "7", "", "3", "", "4", "9", "", "2"],
-        ["5", "", "4", "9", "7", "", "3", "6", ""],
-        ["3", "", "9", "5", "", "8", "7", "", "1"],
-        ["8", "4", "5", "7", "9", "", "6", "1", "3"],
-        ["", "9", "1", "", "3", "6", "", "7", "5"],
-        ["7", "", "6", "1", "8", "5", "4", "", "9"],
-    ]);
+    const [board, setBoard] = useState(initialBoard);
+
+    const calculateSubmatrixDimensions = (n) => {
+        const m = Math.sqrt(n);
+        if (Number.isInteger(m)) {
+            return { rows: m, columns: m };
+        } else {
+            for (let k = 2; k <= n; k++) {
+                if (n % k === 0) {
+                    return { rows: k, columns: n / k };
+                }
+            }
+        }
+    };
+
+    const isValid = (board, row, col, c) => {
+        for (let i = 0; i < boardSize; i++) {
+            let rowValue =
+                subGridSize * Math.floor(row / subGridSize) +
+                Math.floor(i / subGridSize);
+            let colValue =
+                subGridSize * Math.floor(col / subGridSize) + (i % subGridSize);
+            if (board[i][col] == c) return false;
+            if (board[row][i] == c) return false;
+            if (board[rowValue][colValue] == c) return false;
+        }
+        return true;
+    };
+
+    let solve = (board, skips = false) => {
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board[0].length; j++) {
+                if (board[i][j] == "") {
+                    const maxRange = boardSize.toString();
+                    for (let c = "1"; c <= maxRange; c++) {
+                        if (isValid(board, i, j, c)) {
+                            board[i][j] = c;
+                            // elements[i][j].style.background =
+                            //     "rgb(0, 0, 139, 80%)";
+                            // elements[i][j].style.color = "white";
+                            if (solve(board)) {
+                                if (skips) continue;
+                                return true;
+                            } else {
+                                board[i][j] = "";
+                                // elements[i][j].value = "";
+                                // elements[i][j].style.background = "white";
+                                // elements[i][j].style.color = "black";
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
+    const verifyInputBoard = (board, row, col, c) => {
+        for (let i = 0; i < board.length; i++) {
+            let rowValue =
+                subGridSize * Math.floor(row / subGridSize) +
+                Math.floor(i / subGridSize);
+            let colValue =
+                subGridSize * Math.floor(col / subGridSize) + (i % subGridSize);
+            if (i != row && board[i][col] == c) return false;
+            if (i != col && board[row][i] == c) return false;
+            if (
+                rowValue != row &&
+                colValue != col &&
+                board[rowValue][colValue] == c
+            )
+                return false;
+        }
+        return true;
+    };
+
+    const solveSudoku = () => {
+        const newBoard = [...board];
+        for (let i = 0; i < newBoard.length; i++) {
+            for (let j = 0; j < newBoard[0].length; j++) {
+                if (newBoard[i][j] == "") continue;
+                if (!verifyInputBoard(newBoard, i, j, newBoard[i][j])) {
+                    alert("Invalid board");
+                    return;
+                }
+            }
+        }
+        solve(newBoard);
+        setBoard(newBoard);
+    };
+
+    const randomGenerator = (
+        min = (subGridSize * (subGridSize + 1)) / 2,
+        max = boardSize * boardSize,
+    ) => {
+        return Math.floor(Math.random() * max + min);
+    };
+
+    let regenerate = () => {
+        const newBoard = [...board];
+        let eraseNumbers = randomGenerator();
+        for (let i = 0; i < newBoard.length; i++) {
+            for (let j = 0; j < newBoard[0].length; j++) {
+                // elements[i][j].value = "";
+                newBoard[i][j] = "";
+                // elements[i][j].style.background = "white";
+                // elements[i][j].style.color = "black";
+            }
+        }
+        solve(newBoard, true);
+        for (let i = 0; i < newBoard.length; i++) {
+            for (let j = 0; j < newBoard[0].length; j++) {
+                // elements[i][j].style.background = "white";
+                // elements[i][j].style.color = "black";
+                if (randomGenerator(0, subGridSize) == 0 && eraseNumbers > 0) {
+                    newBoard[i][j] = "";
+                    eraseNumbers--;
+                }
+            }
+        }
+        setBoard(newBoard);
+    };
 
     const handleCellChange = (event, i, j) => {
         event.preventDefault();
@@ -27,60 +140,10 @@ const SudokuSolver = () => {
         });
     };
 
-    const isValid = (board, row, col, c) => {
-        for (let i = 0; i < boardSize; i++) {
-            let rowValue = 3 * Math.floor(row / 3) + Math.floor(i / 3);
-            let colValue = 3 * Math.floor(col / 3) + (i % 3);
-            if (board[i][col] == c) return false;
-            if (board[row][i] == c) return false;
-            if (board[rowValue][colValue] == c) return false;
-        }
-        return true;
-    };
+    useEffect(() => {
+        regenerate();
+    }, []);
 
-    const solveSudoku = (board) => {
-        for (let i = 0; i < board.length; i++) {
-            for (let j = 0; j < board[0].length; j++) {
-                if (board[i][j] == "") {
-                    for (let c = "1"; c <= "9"; c++) {
-                        if (isValid(board, i, j, c)) {
-                            board[i][j] = c;
-                            if (solveSudoku(board)) return true;
-                            else board[i][j] = "";
-                        }
-                    }
-
-                    return false;
-                }
-            }
-        }
-        return true;
-    };
-
-    const solveBoard = () => {
-        const newBoard = [...board];
-        let validBoard = true;
-        for (let i = 0; i < boardSize; i++) {
-            for (let j = 0; j < boardSize; j++) {
-                if (newBoard[i][j] == "") continue;
-                if (!isValid(newBoard, i, j, newBoard[i][j])) {
-                    validBoard = false;
-                    break;
-                }
-            }
-            if (!validBoard) break;
-        }
-        if (validBoard) {
-            solveSudoku(newBoard);
-            setBoard(newBoard);
-        } else {
-            alert("invalid board");
-        }
-    };
-
-    const generateRandomBoard = () => {};
-
-    const refreshBoard = () => {};
     return (
         <div className="flex min-h-screen flex-col font-app-font">
             <h1 className="my-4 text-center text-lg font-extrabold capitalize">
@@ -110,18 +173,18 @@ const SudokuSolver = () => {
                 <div className="flex flex-wrap justify-center gap-4">
                     <button
                         className="rounded-md bg-blue-500 px-4 py-2 capitalize  text-white hover:bg-blue-700"
-                        onClick={solveBoard}
+                        onClick={solveSudoku}
                     >
                         Solve
                     </button>
                     <button
                         className="rounded-md bg-blue-500 px-4 py-2 capitalize  text-white hover:bg-blue-700"
-                        onClick={refreshBoard}
+                        onClick={regenerate}
                     >
                         refresh
                     </button>
                     <button
-                        className="rounded-md bg-blue-500 px-4 py-2 capitalize  text-white hover:bg-blue-700"
+                        className="rounded-md bg-red-500 px-4 py-2 capitalize  text-white hover:bg-red-700"
                         onClick={() => setBoard(initialBoard)}
                     >
                         reset
