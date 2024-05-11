@@ -1,33 +1,29 @@
 import { useEffect, useState } from "react";
 
 const SudokuSolver = () => {
+    const calculateSubmatrixDimensions = (n) => {
+        const m = Math.sqrt(n);
+        if (Number.isInteger(m)) {
+            return { n: m, m: m };
+        } else {
+            for (let k = 2; k <= n; k++) {
+                if (n % k === 0) {
+                    return { n: k, m: n / k };
+                }
+            }
+        }
+    };
     const [boardSize, setBoardSize] = useState(9);
-    const subGridSize = Math.sqrt(boardSize);
     const initialBoard = Array.from({ length: boardSize }, () =>
         Array.from({ length: boardSize }, () => ""),
     );
     const [board, setBoard] = useState(initialBoard);
 
-    const calculateSubmatrixDimensions = (n) => {
-        const m = Math.sqrt(n);
-        if (Number.isInteger(m)) {
-            return { rows: m, columns: m };
-        } else {
-            for (let k = 2; k <= n; k++) {
-                if (n % k === 0) {
-                    return { rows: k, columns: n / k };
-                }
-            }
-        }
-    };
-
     const isValid = (board, row, col, c) => {
+        const { n, m } = calculateSubmatrixDimensions(boardSize);
         for (let i = 0; i < boardSize; i++) {
-            let rowValue =
-                subGridSize * Math.floor(row / subGridSize) +
-                Math.floor(i / subGridSize);
-            let colValue =
-                subGridSize * Math.floor(col / subGridSize) + (i % subGridSize);
+            let rowValue = n * Math.floor(row / n) + Math.floor(i / m);
+            let colValue = m * Math.floor(col / m) + (i % m);
             if (board[i][col] == c) return false;
             if (board[row][i] == c) return false;
             if (board[rowValue][colValue] == c) return false;
@@ -65,12 +61,10 @@ const SudokuSolver = () => {
     };
 
     const verifyInputBoard = (board, row, col, c) => {
+        const { n, m } = calculateSubmatrixDimensions(boardSize);
         for (let i = 0; i < board.length; i++) {
-            let rowValue =
-                subGridSize * Math.floor(row / subGridSize) +
-                Math.floor(i / subGridSize);
-            let colValue =
-                subGridSize * Math.floor(col / subGridSize) + (i % subGridSize);
+            let rowValue = n * Math.floor(row / n) + Math.floor(i / m);
+            let colValue = m * Math.floor(col / m) + (i % m);
             if (i != row && board[i][col] == c) return false;
             if (i != col && board[row][i] == c) return false;
             if (
@@ -97,17 +91,15 @@ const SudokuSolver = () => {
         solve(newBoard);
         setBoard(newBoard);
     };
-
-    const randomGenerator = (
-        min = (subGridSize * (subGridSize + 1)) / 2,
-        max = boardSize * boardSize,
-    ) => {
+    //TODO:change min default value
+    const randomGenerator = (min = 40, max = boardSize * boardSize) => {
         return Math.floor(Math.random() * max + min);
     };
 
     let regenerate = () => {
         const newBoard = [...board];
         let eraseNumbers = randomGenerator();
+        const { n, m } = calculateSubmatrixDimensions(boardSize);
         for (let i = 0; i < newBoard.length; i++) {
             for (let j = 0; j < newBoard[0].length; j++) {
                 // elements[i][j].value = "";
@@ -121,7 +113,7 @@ const SudokuSolver = () => {
             for (let j = 0; j < newBoard[0].length; j++) {
                 // elements[i][j].style.background = "white";
                 // elements[i][j].style.color = "black";
-                if (randomGenerator(0, subGridSize) == 0 && eraseNumbers > 0) {
+                if (randomGenerator(0, n) == 0 && eraseNumbers > 0) {
                     newBoard[i][j] = "";
                     eraseNumbers--;
                 }
