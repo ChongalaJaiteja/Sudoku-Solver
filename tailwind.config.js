@@ -6,6 +6,11 @@ export default {
             fontFamily: {
                 "app-font": ["Montserrat", "sans-serif"],
             },
+            screens: {
+                xs: "480px",
+                sm: "580px",
+                md: "770px",
+            },
         },
     },
     plugins: [],

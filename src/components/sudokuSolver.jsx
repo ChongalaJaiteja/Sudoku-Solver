@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 const SudokuSolver = () => {
     const calculateSubmatrixDimensions = (n) => {
@@ -17,10 +18,11 @@ const SudokuSolver = () => {
     const initialBoard = Array.from({ length: boardSize }, () =>
         Array.from({ length: boardSize }, () => ""),
     );
+    const [solvedCells, setSolvedCells] = useState([]);
     const [board, setBoard] = useState(initialBoard);
+    const { n, m } = calculateSubmatrixDimensions(boardSize);
 
     const isValid = (board, row, col, c) => {
-        const { n, m } = calculateSubmatrixDimensions(boardSize);
         for (let i = 0; i < boardSize; i++) {
             let rowValue = n * Math.floor(row / n) + Math.floor(i / m);
             let colValue = m * Math.floor(col / m) + (i % m);
@@ -31,10 +33,11 @@ const SudokuSolver = () => {
         return true;
     };
 
-    let solve = (board, skips = false) => {
+    const solve = (board, skips = false) => {
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board[0].length; j++) {
                 if (board[i][j] == "") {
+                    // setSolvedCells((prev) => [...prev, `${i}${j}`]);
                     const maxRange = boardSize.toString();
                     for (let c = "1"; c <= maxRange; c++) {
                         if (isValid(board, i, j, c)) {
@@ -61,7 +64,6 @@ const SudokuSolver = () => {
     };
 
     const verifyInputBoard = (board, row, col, c) => {
-        const { n, m } = calculateSubmatrixDimensions(boardSize);
         for (let i = 0; i < board.length; i++) {
             let rowValue = n * Math.floor(row / n) + Math.floor(i / m);
             let colValue = m * Math.floor(col / m) + (i % m);
@@ -91,12 +93,13 @@ const SudokuSolver = () => {
         solve(newBoard);
         setBoard(newBoard);
     };
+
     //TODO:change min default value
     const randomGenerator = (min = 40, max = boardSize * boardSize) => {
         return Math.floor(Math.random() * max + min);
     };
 
-    let regenerate = () => {
+    const regenerate = () => {
         const newBoard = [...board];
         let eraseNumbers = randomGenerator();
         const { n, m } = calculateSubmatrixDimensions(boardSize);
@@ -127,24 +130,35 @@ const SudokuSolver = () => {
         setBoard((prevBoard) => {
             const newBoard = [...prevBoard];
             newBoard[i][j] = event.target.value;
-            console.log(event.target.className);
+            // console.log(event.target.className);
             return newBoard;
         });
     };
 
     useEffect(() => {
         regenerate();
+        console.log(board);
+        const emptyCells = board
+            .map((row, i) =>
+                row
+                    .map((col, j) => (col == "" ? `${i}${j}` : ""))
+                    .filter((val) => val != ""),
+            )
+            .flat();
+        setSolvedCells(emptyCells);
     }, []);
 
     return (
-        <div className="flex min-h-screen flex-col font-app-font">
-            <h1 className="my-4 text-center text-lg font-extrabold capitalize">
-                Sudoku Solver
-            </h1>
-            <div className="flex grow flex-col justify-center gap-y-6">
-                <ul className="flex flex-col">
+        <div className="min-h-screen font-app-font outline">
+            <nav>
+                <h1 className="text-center text-lg font-extrabold capitalize outline">
+                    Sudoku Solver
+                </h1>
+            </nav>
+            <div className="my-24 flex flex-col justify-center gap-y-8 outline">
+                <ul className="flex flex-col self-center">
                     {board.map((row, i) => (
-                        <li key={i} className="flex self-center" id={i}>
+                        <li key={i} className="flex" id={i}>
                             {row.map((col, j) => (
                                 <input
                                     id={`${i}${j}`}
@@ -156,7 +170,7 @@ const SudokuSolver = () => {
                                     onChange={(event) =>
                                         handleCellChange(event, i, j)
                                     }
-                                    className="h-10 w-full min-w-11 max-w-12 grow border-2 border-gray-200 text-center"
+                                    className={`xs:w-12 h-10 min-w-9 border-[1px] border-gray-200 text-center sm:h-12 sm:w-14 md:h-14 md:w-16  ${(i + 1) % n == 0 && i != boardSize - 1 && "border-b-2 border-b-gray-300"}  ${(j + 1) % m == 0 && j != boardSize - 1 && "border-r-2 border-r-gray-300"} ${solvedCells.includes(`${i}${j}`) && "bg-blue-500 text-white"} `}
                                 />
                             ))}
                         </li>
