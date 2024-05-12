@@ -11,6 +11,9 @@ export default {
                 sm: "580px",
                 md: "770px",
             },
+            container: {
+                center: true,
+            },
         },
     },
     plugins: [],

@@ -4,7 +4,7 @@
 
 @layer base {
     body {
-        @apply m-0 box-border p-0;
+        @apply m-0 box-border p-0 font-app-font;
     }
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
