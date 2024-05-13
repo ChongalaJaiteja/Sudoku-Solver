@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import SideBar from "./sidebar";
 
 const SudokuSolver = () => {
@@ -11,6 +13,10 @@ const SudokuSolver = () => {
     const [solvedCells, setSolvedCells] = useState([]);
     const [isBoardSolved, setIsBoardSolved] = useState(false);
     const [board, setBoard] = useState(initialBoard);
+
+    const notify = () => {
+        toast.error("🦄invalid board !");
+    };
 
     // Function to calculate the submatrix dimensions
     const calculateSubmatrixDimensions = (n) => {
@@ -29,6 +35,7 @@ const SudokuSolver = () => {
     // Get the submatrix dimensions
     const { n, m } = calculateSubmatrixDimensions(boardSize);
 
+    // console.log("n", n, "m", m);
     // Function to check if the number is valid
     const isValid = (board, row, col, c) => {
         for (let i = 0; i < boardSize; i++) {
@@ -49,7 +56,7 @@ const SudokuSolver = () => {
                     const maxRange = boardSize.toString();
                     for (let c = "1"; c <= maxRange; c++) {
                         if (isValid(board, i, j, c)) {
-                            board[i][j] = c;
+                            board[i][j] = c.toString();
                             if (solve(board)) {
                                 if (skips) continue;
                                 return true;
@@ -85,22 +92,28 @@ const SudokuSolver = () => {
     // Function to solve the sudoku
     const solveSudoku = () => {
         const newBoard = [...board];
-        const emptyCells = newBoard
-            .map((row, i) =>
-                row
-                    .map((col, j) => (col == "" ? `${i}${j}` : ""))
-                    .filter((val) => val != ""),
-            )
-            .flat();
-        setSolvedCells(emptyCells);
+        const invalidCells = [];
+        // let validBoard = true;
+        setIsBoardSolved(false);
         for (let i = 0; i < newBoard.length; i++) {
             for (let j = 0; j < newBoard[0].length; j++) {
                 if (newBoard[i][j] == "") continue;
                 if (!verifyInputBoard(newBoard, i, j, newBoard[i][j])) {
-                    alert("Invalid board");
-                    return;
+                    invalidCells.push(`${i}${j}`);
                 }
             }
+        }
+        // FIXME: Fix the issue with the invalid cells include is not working
+        if (invalidCells.length > 0) {
+            setSolvedCells((prev) =>
+                prev.map((cell) =>
+                    invalidCells.includes(cell.position)
+                        ? { ...cell, isValid: false }
+                        : cell,
+                ),
+            );
+            notify();
+            return;
         }
         solve(newBoard);
         setBoard(newBoard);
@@ -113,9 +126,21 @@ const SudokuSolver = () => {
         return Math.floor(Math.random() * max + min);
     };
 
+    const getEmptyCells = (inputBoard) => {
+        const emptyCells = [];
+        inputBoard.forEach((row, i) => {
+            row.forEach((col, j) => {
+                if (col == "") {
+                    emptyCells.push({ position: `${i}${j}`, isValid: true });
+                }
+            });
+        });
+
+        return emptyCells;
+    };
     // Function to regenerate the board
     const handleRegenerate = () => {
-        setSolvedCells([]);
+        // setSolvedCells([]);
         setIsBoardSolved(false);
         let eraseNumbers = randomGenerator();
         const newBoard = initialBoard;
@@ -134,28 +159,40 @@ const SudokuSolver = () => {
     // Function to handle cell change
     const handleCellChange = (event, i, j) => {
         event.preventDefault();
-        setBoard((prevBoard) => {
-            const newBoard = [...prevBoard];
-            newBoard[i][j] = event.target.value;
-            return newBoard;
-        });
+        const newValue = parseInt(event.target.value, 10);
+        if (event.target.value === "") {
+            setBoard((prevBoard) => {
+                const newBoard = [...prevBoard];
+                newBoard[i][j] = "";
+                return newBoard;
+            });
+        } else if (newValue >= 1 && newValue <= boardSize) {
+            setBoard((prevBoard) => {
+                const newBoard = [...prevBoard];
+                newBoard[i][j] = newValue.toString(); // Convert back to string for consistency
+                return newBoard;
+            });
+        }
     };
 
     // Function to handle board reset
     const handleReset = () => {
         setBoard(initialBoard);
         setIsBoardSolved(false);
-        setSolvedCells([]);
+        // setSolvedCells([]);
     };
 
     const getCellClassNames = (i, j) => {
         const classNames = [
-            "xs:w-12 h-10 min-w-9 border-[1px] border-gray-200 text-center",
+            "xs:w-12 h-10 min-w-9 border-[1px] border-gray-200 text-center sm:h-12 sm:w-14 md:h-14 md:w-16",
             `${(i + 1) % n === 0 && i !== boardSize - 1 ? "border-b-2 border-b-gray-300" : ""}`,
-            `${(j + 1) % n === 0 && j !== boardSize - 1 ? "border-r-2 border-r-gray-300" : ""}`,
-            `${solvedCells.includes(`${i}${j}`) ? "bg-red-400 text-white" : ""}`,
+            `${(j + 1) % m === 0 && j !== boardSize - 1 ? "border-r-2 border-r-gray-300" : ""}`,
+            // `${solvedCells.find(cell => cell.position === `${i}${j}))?.isValid ? "" : "bg-red-200"}`,
         ];
-
+        // console.log("solvedCells", solvedCells);
+        // console.log(
+        //     solvedCells.find((cell) => cell.position == `${i}${j}`)?.isValid,
+        // );
         return twMerge(classNames.filter((className) => className).join(" "));
     };
 
@@ -163,6 +200,10 @@ const SudokuSolver = () => {
         // Generate a new board on component mount
         handleRegenerate();
     }, [boardSize]);
+
+    useEffect(() => {
+        setSolvedCells(getEmptyCells(board));
+    }, [board]);
 
     return (
         <>
@@ -221,6 +262,7 @@ const SudokuSolver = () => {
                     </div>
                 </div>
             </div>
+            <ToastContainer position="top-center" />
         </>
     );
 };
