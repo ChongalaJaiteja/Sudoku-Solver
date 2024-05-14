@@ -35,7 +35,7 @@ The Sudoku Solver website is deployed on GitHub Pages. You can access it at [Sud
 
 ## Folder Structure
 - `src`: Contains the source code for the portfolio website.
-- `components`: Contains React components for different sections.
+- `components`: Contains React components.
 - `public`: Contains static assets, such as images.
 
 ## Author
