@@ -106,7 +106,6 @@ const SudokuSolver = () => {
     };
 
     // Function to generate a random number
-    //TODO:change min default value
     const randomGenerator = (min = 40, max = boardSize * boardSize) => {
         return Math.floor(Math.random() * max + min);
     };
@@ -223,8 +222,7 @@ const SudokuSolver = () => {
                     <button
                         className={`max-w-xs grow rounded-md bg-blue-500 px-4  py-2 text-xs  font-medium capitalize text-white
                         hover:bg-blue-700 xs:text-sm  md:text-base  lg:text-lg
-                        
-                         ${isBoardSolved ? "bg-gray-400 hover:bg-gray-500" : ""}`}
+                        ${isBoardSolved ? "bg-gray-400 hover:bg-gray-500" : ""}`}
                         onClick={solveSudoku}
                         disabled={isBoardSolved}
                     >
