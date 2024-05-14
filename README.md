@@ -26,7 +26,7 @@ Click the image above to watch the demo video.
 
 ## Usage
 1. Run the development server:
-`npm run start`
+`npm start`
 
 2. Access the website in your browser at `http://localhost:5173`.
 
