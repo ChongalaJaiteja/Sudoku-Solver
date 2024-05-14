@@ -1,6 +1,7 @@
 import { stack as Menu } from "react-burger-menu";
+import { useState } from "react";
 
-const SideBar = ({ sideBarItems, onChangeBoardSize }) => {
+const SideBar = ({ sideBarItems, onChangeBoardSize, currentBoardSize }) => {
     var styles = {
         bmBurgerBars: {
             background: "#373a47",
@@ -23,14 +24,15 @@ const SideBar = ({ sideBarItems, onChangeBoardSize }) => {
         },
         bmMenu: {
             background: "#373a47",
-            padding: "2.5em 1.5em 0",
+            padding: "1.7em 0.8em 0",
             fontSize: "1.15em",
+            overflow: "hidden",
         },
         bmMorphShape: {
             fill: "#373a47",
         },
         bmItemList: {
-            color: "#b8b7ad",
+            color: "white",
             padding: "0.8em",
         },
         bmItem: {
@@ -42,21 +44,39 @@ const SideBar = ({ sideBarItems, onChangeBoardSize }) => {
             left: "0",
         },
     };
+    const [menuOpenState, setMenuOpenState] = useState(false);
 
+    const handleBoardSizeChange = (size) => {
+        setMenuOpenState(false);
+        onChangeBoardSize(size);
+    };
     return (
         <Menu
             styles={styles}
             burgerButtonClassName="relative w-6 h-5 sm:w-7 sm:h-6 md:w-8"
+            isOpen={menuOpenState}
+            onStateChange={(newState) => setMenuOpenState(newState.isOpen)}
         >
-            <ul>
-                {sideBarItems.map((item, index) => (
-                    <li key={index}>
-                        <button onClick={() => onChangeBoardSize(item)}>
-                            {item}X{item}
-                        </button>
-                    </li>
-                ))}
-            </ul>
+            <div className="h-full w-full space-y-2">
+                <h1 className="mb-5 text-center text-sm font-bold capitalize  xs:text-lg  md:text-xl  lg:text-2xl">
+                    sudoku board
+                </h1>
+                <ul className="md:bg-gree h-[84%] space-y-3 sm:space-y-1">
+                    {sideBarItems.map((item, index) => (
+                        <li
+                            key={index}
+                            className={`cursor-pointer rounded-md p-2  text-sm  font-medium capitalize transition-colors duration-200  ease-in-out  hover:bg-slate-400   xs:text-base md:text-lg lg:text-xl ${currentBoardSize === item ? "bg-slate-500" : ""}`}
+                            onClick={() => handleBoardSizeChange(item)}
+                        >
+                            {item} X {item}
+                        </li>
+                    ))}
+                </ul>
+                <p className="text-xs font-medium  xs:text-sm md:text-base lg:text-lg">
+                    Copyright &copy; {new Date().getFullYear()} Jai teja. All
+                    rights reserved.
+                </p>
+            </div>
         </Menu>
     );
 };

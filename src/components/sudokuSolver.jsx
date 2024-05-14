@@ -59,12 +59,11 @@ const SudokuSolver = () => {
 
     const getCellClassNames = (i, j) => {
         const classNames = [
-            "xs:w-12 h-10 min-w-9 border-[1px] border-gray-200 text-center sm:h-12 sm:w-14 md:h-14 md:w-16 text-black",
+            "xs:w-12 h-10 min-w-9 border-[1px] border-gray-200 text-center sm:h-12 sm:w-14 md:h-14 md:w-16 text-black ",
             `${(i + 1) % n === 0 && i !== boardSize - 1 ? "border-b-2 border-b-gray-300" : ""}`,
             `${(j + 1) % m === 0 && j !== boardSize - 1 ? "border-r-2 border-r-gray-300" : ""}`,
             `${!board[i][j].isValid ? "bg-red-500 text-white" : ""}`,
-            `${isBoardSolved && board[i][j].isEmpty ? "bg-red-300" : ""}`,
-            // ` ${isEmptyCell ? (isEmptyCell.isValid ? (isBoardSolved ? "bg-red-300" : "bg-white") : "bg-red-500 text-white") : ""}`,
+            `${isBoardSolved && board[i][j].isEmpty ? "bg-red-300 text-white" : ""}`,
         ];
 
         return twMerge(classNames.filter((className) => className).join(" "));
@@ -151,7 +150,7 @@ const SudokuSolver = () => {
     };
 
     const notify = () => {
-        toast.error("🦄invalid board !");
+        toast.error("Invalid Sudoku!");
     };
 
     // Function to solve the sudoku
@@ -189,64 +188,64 @@ const SudokuSolver = () => {
     }, [boardSize]);
 
     return (
-        <>
-            <nav className="fixed inset-0 bottom-auto  flex items-center bg-red-300 px-2 py-4 shadow sm:px-5 md:px-8 md:shadow-lg xl:px-10">
+        <div className="flex min-h-screen flex-col gap-14">
+            <nav className="sticky top-0 flex items-center bg-red-300 px-2 py-4 text-white shadow sm:px-5 md:px-8 md:shadow-lg xl:px-10">
                 <SideBar
                     sideBarItems={boardSizes}
                     onChangeBoardSize={(size) => setBoardSize(size)}
+                    currentBoardSize={boardSize}
                 />
-                <h1 className="grow text-center text-lg font-extrabold capitalize">
+                <h1 className="grow text-center text-sm font-extrabold capitalize xs:text-lg  md:text-xl  lg:text-2xl">
                     Sudoku {boardSize} Solver
                 </h1>
             </nav>
 
-            <div className="container">
-                <div className="my-24 flex w-full flex-col justify-center gap-y-8 overflow-x-auto outline ">
-                    <ul className="flex flex-col self-center">
-                        {board.map((row, i) => (
-                            <li key={i} className="flex" id={i}>
-                                {row.map((col, j) => (
-                                    <input
-                                        key={`${i}${j}`}
-                                        type="number"
-                                        min="1"
-                                        value={col.value}
-                                        max={boardSize}
-                                        disabled={isBoardSolved}
-                                        onChange={(event) =>
-                                            handleCellChange(event, i, j)
-                                        }
-                                        className={getCellClassNames(i, j)}
-                                    />
-                                ))}
-                            </li>
-                        ))}
-                    </ul>
-                    <div className="flex flex-wrap justify-center gap-4">
-                        <button
-                            className={`rounded-md bg-blue-500 px-4 py-2 capitalize  text-white hover:bg-blue-700 ${isBoardSolved ? "bg-gray-400 hover:bg-gray-500" : ""}`}
-                            onClick={solveSudoku}
-                            disabled={isBoardSolved}
-                        >
-                            Solve
-                        </button>
-                        <button
-                            className="rounded-md bg-blue-500 px-4 py-2 capitalize  text-white hover:bg-blue-700"
-                            onClick={handleRegenerate}
-                        >
-                            refresh
-                        </button>
-                        <button
-                            className="rounded-md bg-red-500 px-4 py-2 capitalize  text-white hover:bg-red-700"
-                            onClick={handleReset}
-                        >
-                            reset
-                        </button>
-                    </div>
+            <div className="container flex w-full grow flex-col justify-center  gap-y-8 px-3  sm:px-0">
+                <ul className="flex max-w-full flex-col self-center overflow-auto shadow ">
+                    {board.map((row, i) => (
+                        <li key={i} className="flex" id={i}>
+                            {row.map((col, j) => (
+                                <input
+                                    key={`${i}${j}`}
+                                    type="number"
+                                    value={col.value}
+                                    disabled={isBoardSolved}
+                                    onChange={(event) =>
+                                        handleCellChange(event, i, j)
+                                    }
+                                    className={getCellClassNames(i, j)}
+                                />
+                            ))}
+                        </li>
+                    ))}
+                </ul>
+                <div className="flex flex-wrap justify-center gap-4 px-10">
+                    <button
+                        className={`max-w-xs grow rounded-md bg-blue-500 px-4  py-2 text-xs  font-medium capitalize text-white
+                        hover:bg-blue-700 xs:text-sm  md:text-base lg:py-3 lg:text-lg
+                        
+                         ${isBoardSolved ? "bg-gray-400 hover:bg-gray-500" : ""}`}
+                        onClick={solveSudoku}
+                        disabled={isBoardSolved}
+                    >
+                        Solve
+                    </button>
+                    <button
+                        className="max-w-xs grow rounded-md bg-blue-500 px-4 py-2 text-xs  font-medium capitalize text-white hover:bg-blue-700 xs:text-sm  md:text-base lg:py-3 lg:text-lg"
+                        onClick={handleRegenerate}
+                    >
+                        refresh
+                    </button>
+                    <button
+                        className="max-w-xs grow rounded-md bg-red-500 px-4 py-2 text-xs  font-medium capitalize text-white hover:bg-red-700 xs:text-sm  md:text-base lg:py-3 lg:text-lg"
+                        onClick={handleReset}
+                    >
+                        reset
+                    </button>
                 </div>
             </div>
             <ToastContainer position="top-center" />
-        </>
+        </div>
     );
 };
 
