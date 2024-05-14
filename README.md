@@ -1,8 +1,43 @@
-# React + Vite
+# Sudoku Solver
+## Overview
+A Sudoku solver web app built using React.js & Tailwind CSS. Users choose board sizes, generate new puzzles, reset for custom input, & solve. Responsive design ensures usability across devices. Core features include an interactive board, puzzle generation, custom input, & efficient solving algorithm. Ideal for puzzle enthusiasts & developers exploring modern web tech.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Technologies Used
+- React.js
+- Tailwind CSS (Styling)
 
-Currently, two official plugins are available:
+## Features
+1. **Dynamic Board Sizes**: Choose from various board sizes, including 4x4, 6x6, 9x9, and more.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+2. **Intelligent Solver Algorithm**:Solve Sudoku puzzles in seconds with an advanced algorithm, ensuring accuracy and efficiency.
+
+## Demo
+
+[![Sudoku Solver Demo](https://img.youtube.com/vi/Jz8roGdOZdg/maxresdefault.jpg)](https://youtu.be/Jz8roGdOZdg)
+
+Click the image above to watch the demo video.
+
+## Installation
+1. **Clone the repository**:
+`git clone https://github.com/ChongalaJaiteja/Sudoku-Solver.git`
+
+2. **Install dependencies**:
+`npm install`
+
+## Usage
+1. Run the development server:
+`npm run start`
+
+2. Access the website in your browser at `http://localhost:5173`.
+
+## Deployment
+The Sudoku Solver website is deployed on GitHub Pages. You can access it at [Sudoku Solver](https://chongalajaiteja.github.io/Sudoku-Solver/).
+
+## Folder Structure
+- `src`: Contains the source code for the portfolio website.
+- `components`: Contains React components for different sections.
+- `public`: Contains static assets, such as images.
+
+## Author
+[Chongala Jai teja](https://github.com/ChongalaJaiteja)
+
