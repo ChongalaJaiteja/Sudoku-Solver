@@ -222,7 +222,7 @@ const SudokuSolver = () => {
                 <div className="flex flex-wrap justify-center gap-4 px-10">
                     <button
                         className={`max-w-xs grow rounded-md bg-blue-500 px-4  py-2 text-xs  font-medium capitalize text-white
-                        hover:bg-blue-700 xs:text-sm  md:text-base lg:py-3 lg:text-lg
+                        hover:bg-blue-700 xs:text-sm  md:text-base  lg:text-lg
                         
                          ${isBoardSolved ? "bg-gray-400 hover:bg-gray-500" : ""}`}
                         onClick={solveSudoku}
@@ -231,13 +231,13 @@ const SudokuSolver = () => {
                         Solve
                     </button>
                     <button
-                        className="max-w-xs grow rounded-md bg-blue-500 px-4 py-2 text-xs  font-medium capitalize text-white hover:bg-blue-700 xs:text-sm  md:text-base lg:py-3 lg:text-lg"
+                        className="max-w-xs grow rounded-md bg-blue-500 px-4 py-2 text-xs  font-medium capitalize text-white hover:bg-blue-700 xs:text-sm  md:text-base  lg:text-lg"
                         onClick={handleRegenerate}
                     >
                         refresh
                     </button>
                     <button
-                        className="max-w-xs grow rounded-md bg-red-500 px-4 py-2 text-xs  font-medium capitalize text-white hover:bg-red-700 xs:text-sm  md:text-base lg:py-3 lg:text-lg"
+                        className="max-w-xs grow rounded-md bg-red-500 px-4 py-2 text-xs  font-medium capitalize text-white hover:bg-red-700 xs:text-sm  md:text-base lg:text-lg"
                         onClick={handleReset}
                     >
                         reset
